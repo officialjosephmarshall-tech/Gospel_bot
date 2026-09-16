@@ -1,87 +1,39 @@
-from flask import Flask, request, render_template_string
-import csv
+Here is the complete and simple app.py code for your Streamlit app, built exactly to your specifications.
+### app.py
+```python
+import pandas as pd
+import streamlit as st
 
-app = Flask(__name__)
+# 2. Set page title and icon
+st.set_page_config(page_title="Gospel Bot", page_icon="🎵")
 
-def load_songs():
-    with open("songs.csv", "r", encoding="utf-8") as file:
-        return list(csv.DictReader(file))
+# 3. Show title with music note emoji
+st.title("Gospel Bot 🎵")
 
-@app.route("/")
-def home():
-    songs = load_songs()
-    return render_template_string("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Gospel Bot</title>
-    </head>
-    <body>
-        <h1>Gospel Bot is Live</h1>
-        <p>Number of songs: {{ count }}</p>
+# 4. Show descriptive text
+st.write("Find your favorite gospel songs")
 
-        <form action="/search" method="get">
-            <input type="text" name="q" placeholder="Search song title">
-            <button type="submit">Search</button>
-        </form>
-    </body>
-    </html>
-    """, count=len(songs))
+# 5. Read the CSV file
+# Make sure 'songs.csv' is in the same folder as app.py in your GitHub repo
+df = pd.read_csv("songs.csv")
 
+# 6. Text input box for searching
+search_query = st.text_input("Search song or artist")
 
-@app.route("/search")
-def search():
-    query = request.args.get("q", "").lower()
-    songs = load_songs()
+# 7 & 9. Filter table if user types something, otherwise show all
+if search_query:
+  # Filter rows where search matches Title or Artist, ignoring case
+  filtered_df = df[
+      df["Title"].str.contains(search_query, case=False, na=False)
+      | df["Artist"].str.contains(search_query, case=False, na=False)
+  ]
 
-    results = [
-        song for song in songs
-        if query in song["title"].lower()
-    ]
+  # 8. Show how many songs found
+  st.write(f"Found **{len(filtered_df)}** song(s)")
+  st.dataframe(filtered_df, hide_index=True, use_container_width=True)
+else:
+  st.dataframe(df, hide_index=True, use_container_width=True)
 
-    return render_template_string("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Search Songs</title>
-    </head>
-    <body>
-        <h1>Search Gospel Songs</h1>
-
-        <form action="/search" method="get">
-            <input type="text" name="q" value="{{ query }}"
-                   placeholder="Enter song title">
-            <button type="submit">Search</button>
-        </form>
-
-        {% if results %}
-            {% for song in results %}
-                <hr>
-                <h2>{{ song["title"] }}</h2>
-                <p><b>Artist:</b> {{ song["artist"] }}</p>
-                <p><b>Type:</b> {{ song["type"] }}</p>
-                <p><b>Language:</b> {{ song["language"] }}</p>
-
-                <h3>Lyrics</h3>
-                <pre>{{ song["lyrics"] }}</pre>
-
-                {% if song["affiliate"] %}
-                    <p>
-                        <a href="{{ song["affiliate"] }}">
-                            Listen / Buy
-                        </a>
-                    </p>
-                {% endif %}
-            {% endfor %}
-        {% else %}
-            <p>No songs found.</p>
-        {% endif %}
-
-        <p><a href="/">Back to Home</a></p>
-    </body>
-    </html>
-    """, results=results, query=query)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+# 10. Show total songs count at the bottom
+st.markdown("---")
+st.write(f"Total songs: {len(df)}")
