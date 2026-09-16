@@ -1,4 +1,4 @@
-Here is the complete and simple app.py code for your Streamlit app, built exactly to your specifications.
+
 ### app.py
 ```python
 import pandas as pd
