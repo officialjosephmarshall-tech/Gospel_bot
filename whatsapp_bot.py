@@ -1,40 +1,4 @@
-import os
-from flask import Flask, request, jsonify
-import requests
-
-app = Flask(__name__)
-
-# Environment variables
-WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
-PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
-VERIFY_TOKEN = "gospel123"
-
-# List of 11 gospel songs with title and artist
-SONGS = [
-    {"title": "Way Maker", "artist": "Sinach"},
-    {"title": "Excess Love", "artist": "Mercy Chinwo"},
-    {"title": "Nara", "artist": "Tim Godfrey ft. Travis Greene"},
-    {"title": "I Know Who I Am", "artist": "Sinach"},
-    {"title": "Bigger Than", "artist": "Nathaniel Bassey"},
-    {"title": "Imela", "artist": "Nathaniel Bassey ft. Enitan Adaba"},
-    {"title": "Ekwueme", "artist": "Prospa Ochimana"},
-    {"title": "You Are Great", "artist": "Steve Crown"},
-    {"title": "Omemma", "artist": "Sinach"},
-    {"title": "Obinasom", "artist": "Mercy Chinwo"},
-    {"title": "Yahweh", "artist": "Deola Adebayo"}
-]
-
-def search_songs(query):
-    """Searches for songs by name/artist or returns the full list if requested."""
-    query = query.strip().lower()
-    
-    if query == "list":
-        song_list_str = "📜 **Available Gospel Songs:**\n" + "\n".join(
-            [f"{i+1}. {s['title']} - {s['artist']}" for i, s in enumerate(SONGS)]
-        )
-        return song_list_str
-
-    # Search by title or artist
+  # Search by title or artist
     results = [
         s for s in SONGS 
         if query in s["title"].lower() or query in s["artist"].lower()
@@ -113,5 +77,5 @@ def webhook():
     return "ok", 200
 
 if __name__ == "__main__":
-    app.run(host="0,0,0,0",port=int(os.environ.get("PORT",10000)))
+    app.run(host="0.0.0.0",port=int(os.environ.get("PORT",10000)))
 
