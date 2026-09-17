@@ -1,6 +1,6 @@
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
-
+import os
 app = Flask(__name__)
 
 @app.route("/webhook", methods=["POST"])
@@ -21,8 +21,6 @@ def webhook():
 @app.route("/", methods=["GET"])
 def home():
     return "Gospel Bot Live"
-
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
