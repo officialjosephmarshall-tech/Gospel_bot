@@ -20,7 +20,7 @@ def webhook():
 
 @app.route("/", methods=["GET"])
 def home():
-    return "OK - Bot Live"
+    return "Gospel Bot Live"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
