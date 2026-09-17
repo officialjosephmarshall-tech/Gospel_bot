@@ -1,36 +1,26 @@
-import pandas as pd
-import streamlit as st
+from flask import Flask, request
+from twilio.twiml.messaging_response import MessagingResponse
 
-# 2. Set page title and icon
-st.set_page_config(page_title="Gospel Bot", page_icon="🎵")
+app = Flask(__name__)
 
-# 3. Show title with music note emoji
-st.title("Gospel Bot 🎵")
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    body = request.values.get('Body', '').lower()
+    r = MessagingResponse()
+    m = r.message()
+    if 'hi' in body or 'hello' in body:
+        m.body("🙏 Gospel Bot LIVE!\n\n1 - Amazing Grace\n2 - How Great Thou Art\n\nSend 1 or 2")
+    elif '1' in body:
+        m.body("🎵 Amazing Grace: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")
+    elif '2' in body:
+        m.body("🎵 How Great Thou Art: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3")
+    else:
+        m.body("God bless! Send 'hi' to start")
+    return str(r)
 
-# 4. Show descriptive text
-st.write("Find your favorite gospel songs")
+@app.route("/", methods=["GET"])
+def home():
+    return "OK - Bot Live"
 
-# 5. Read the CSV file
-# Make sure 'songs.csv' is in the same folder as app.py in your GitHub repo
-df = pd.read_csv("songs.csv")
-
-# 6. Text input box for searching
-search_query = st.text_input("Search song or artist")
-
-# 7 & 9. Filter table if user types something, otherwise show all
-if search_query:
-  # Filter rows where search matches Title or Artist, ignoring case
-  filtered_df = df[
-      df["Title"].str.contains(search_query, case=False, na=False)
-      | df["Artist"].str.contains(search_query, case=False, na=False)
-  ]
-
-  # 8. Show how many songs found
-  st.write(f"Found **{len(filtered_df)}** song(s)")
-  st.dataframe(filtered_df, hide_index=True, use_container_width=True)
-else:
-  st.dataframe(df, hide_index=True, use_container_width=True)
-
-# 10. Show total songs count at the bottom
-st.markdown("---")
-st.write(f"Total songs: {len(df)}")
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
